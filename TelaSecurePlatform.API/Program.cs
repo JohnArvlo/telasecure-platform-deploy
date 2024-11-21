@@ -43,9 +43,9 @@ builder.Services.AddControllers(options => options.Conventions.Add(new KebabCase
 //Add CORS Policy (to all controllers)
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAllPolicy",
+    options.AddPolicy("AllowSpecificOrigin",
         policy => 
-            policy.AllowAnyOrigin()
+            policy.WithOrigins("http://weaveguard-frontend.vercel.app")
                 .AllowAnyMethod()
                 .AllowAnyHeader());
 });
@@ -169,14 +169,18 @@ using (var scope = app.Services.CreateScope())
     var context = services.GetRequiredService<AppDbContext>();
     context.Database.EnsureCreated();
     
-    
-// Eliminar la base de datos si existe
-    context.Database.EnsureDeleted();
-
-// Crear la base de datos
-    context.Database.EnsureCreated();
-    
 }
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+    if (builder.Environment.IsDevelopment())
+        options.UseMySQL(connectionString)
+            .LogTo(Console.WriteLine, LogLevel.Information)
+            .EnableDetailedErrors()
+            .EnableSensitiveDataLogging();
+    else if (builder.Environment.IsProduction())
+        options.UseMySQL(connectionString);
+});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -186,6 +190,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowSpecificOrigin");
 
 app.UseAuthorization();
 
