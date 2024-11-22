@@ -175,7 +175,7 @@ using (var scope = app.Services.CreateScope())
     //context.Database.EnsureCreated();
     
     // Eliminar la base de datos si existe
-    context.Database.EnsureDeleted();
+    //context.Database.EnsureDeleted();
 
     // Crear la base de datos
     context.Database.EnsureCreated();
