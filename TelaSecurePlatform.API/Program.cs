@@ -50,7 +50,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
         policy => 
-            policy.WithOrigins("http://localhost:5173")
+            policy.WithOrigins("http://weaveguard-frontend.vercel.app")
                 .AllowAnyMethod()
                 .AllowAnyHeader());
 });
@@ -185,7 +185,11 @@ using (var scope = app.Services.CreateScope())
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "TelaSecure Platform API V1");
+        c.RoutePrefix = string.Empty;
+    });
 }
 
 app.UseHttpsRedirection();
